@@ -1,0 +1,21 @@
+{
+  "name": "@alexmkx/opencode-multi-delegate",
+  "version": "0.2.0",
+  "description": "Multi-delegate plugin for OpenCode — dispatches tasks to multiple AI models in parallel and produces consolidated reports",
+  "type": "module",
+  "main": "./index.js",
+  "license": "MIT",
+  "author": "alexmkx",
+  "keywords": [
+    "opencode",
+    "plugin",
+    "multi-delegate",
+    "multi-model",
+    "code-review",
+    "parallel-agents"
+  ],
+  "files": [
+    "index.js",
+    "skills/multi-delegate/multi-delegate/SKILL.md"
+  ]
+}
