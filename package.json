@@ -1,6 +1,6 @@
 {
   "name": "@alexmkx/opencode-multi-delegate",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Multi-delegate plugin for OpenCode — dispatches tasks to multiple AI models in parallel and produces consolidated reports",
   "type": "module",
   "main": "./index.js",
