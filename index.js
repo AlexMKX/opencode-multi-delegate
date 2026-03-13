@@ -8,10 +8,15 @@
  *
  * {
  *   "delegate_models": [
- *     { "model": "anthropic/claude-opus-4-6", "variant": "medium" },
- *     { "model": "openai/gpt-5.3-codex", "variant": "high" }
+ *     { "model": "anthropic/claude-opus-4-6" },
+ *     { "model": "openai/gpt-5.4" },
+ *     { "model": "google/gemini-3.1-pro-preview", "variant": "medium" }
  *   ]
  * }
+ *
+ * "variant" is optional — omit it to use the provider's default settings.
+ * Only set it when the model has explicit variant definitions in your
+ * opencode.json provider config.
  *
  * Agent names are derived from model IDs: "anthropic/claude-opus-4-6"
  * becomes "@anthropic_claude-opus-4-6-delegate".
@@ -30,9 +35,9 @@ const CONFIG_FILENAME = 'multi-delegate.jsonc';
 
 const CONFIG_TEMPLATE = `{
   "delegate_models": [
-    // Add your models here
-    // { "model": "provider/model-id", "variant": "low|medium|high|max" }
-    // { "model": "anthropic/claude-opus-4-6", "variant": "medium" }
+    // Add your models here. "variant" is optional.
+    // { "model": "anthropic/claude-opus-4-6" }
+    // { "model": "openai/gpt-5.4" }
   ]
 }
 `;

@@ -20,14 +20,15 @@ The multi-delegate plugin dynamically creates `@*-delegate` agents from `~/.conf
 ```jsonc
 {
   "delegate_models": [
-    { "model": "anthropic/claude-opus-4-6", "variant": "medium" },
-    { "model": "openai/gpt-5.3-codex", "variant": "high" },
+    { "model": "anthropic/claude-opus-4-6" },
+    { "model": "openai/gpt-5.4" },
+    // "variant" is optional — only set when model has explicit variant definitions
     { "model": "google/gemini-3.1-pro-preview", "variant": "medium" }
   ]
 }
 ```
 
-Agent names are derived from model IDs: `anthropic/claude-opus-4-6` → `@anthropic_claude-opus-4-6-delegate`. Add or remove entries to change the delegate set. The `variant` controls the model's effort/thinking budget.
+Agent names are derived from model IDs: `anthropic/claude-opus-4-6` → `@anthropic_claude-opus-4-6-delegate`. Add or remove entries to change the delegate set. The `variant` field is optional — omit it to use provider defaults.
 
 ## Process
 
