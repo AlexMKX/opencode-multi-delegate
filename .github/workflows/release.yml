@@ -6,7 +6,8 @@ on:
       - 'v*'
 
 permissions:
-  contents: write
+  contents: read
+  id-token: write  # Required for OIDC
 
 jobs:
   release:
