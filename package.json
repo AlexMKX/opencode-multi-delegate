@@ -1,11 +1,15 @@
 {
   "name": "@alexmkx/opencode-multi-delegate",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Multi-delegate plugin for OpenCode — dispatches tasks to multiple AI models in parallel and produces consolidated reports",
   "type": "module",
   "main": "./index.js",
   "license": "MIT",
   "author": "alexmkx",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexMKX/opencode-multi-delegate.git"
+  },
   "keywords": [
     "opencode",
     "plugin",
