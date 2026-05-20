@@ -27,9 +27,7 @@
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import { renderSkill } from './lib/render-skill.js';
 
 const CONFIG_FILENAME = 'multi-delegate.jsonc';
 
@@ -100,44 +98,49 @@ const loadConfig = (configDir) => {
   }
 };
 
-// Ensure skill symlink exists in {configDir}/skills/
-const ensureSkillLink = (configDir) => {
-  const skillsDir = path.join(configDir, 'skills');
-  const target = path.join(skillsDir, 'multi-delegate');
-  const source = path.join(__dirname, 'skills', 'multi-delegate');
+// Write SKILL.md to {configDir}/skills/multi-delegate/multi-delegate/SKILL.md.
+// If no delegates are configured, remove any existing file so the skill
+// disappears from opencode's discovery — an empty multi-delegate skill is
+// useless and only confuses the orchestrator. Also handles migration from
+// older plugin versions that created a symlink at this path.
+const writeSkillFile = (configDir, delegates) => {
+  const dir = path.join(configDir, 'skills', 'multi-delegate', 'multi-delegate');
+  const file = path.join(dir, 'SKILL.md');
 
   try {
-    fs.mkdirSync(skillsDir, { recursive: true });
+    // Clean up any prior symlink/file/dir from older plugin versions
+    // before deciding what to write. rmSync with force+recursive handles
+    // symlinks correctly (removes the link, not the target).
+    fs.rmSync(dir, { recursive: true, force: true });
 
-    // Check if symlink already points to the right place
-    try {
-      const existing = fs.readlinkSync(target);
-      if (existing === source) return;
-      fs.rmSync(target, { recursive: true });
-    } catch (e) {
-      // Does not exist or not a symlink — fine
-    }
+    if (delegates.length === 0) return;
 
-    fs.symlinkSync(source, target);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(file, renderSkill(delegates), 'utf8');
   } catch (e) {
-    // Non-fatal — skill just won't appear in `opencode debug skill`
+    // Non-fatal — the orchestrator skill just won't appear in opencode.
   }
 };
 
 export const MultiDelegatePlugin = async ({ client, directory }) => {
   const configDir = getConfigDir();
-  ensureSkillLink(configDir);
   const pluginConfig = loadConfig(configDir);
+
+  const delegates = (pluginConfig.delegate_models || [])
+    .filter((d) => d && d.model)
+    .map(({ model, variant }) => ({
+      agentName: toAgentName(model),
+      model,
+      variant,
+    }));
+
+  writeSkillFile(configDir, delegates);
 
   return {
     config: async (config) => {
-      const delegates = pluginConfig.delegate_models || [];
       const agents = config.agent || {};
 
-      for (const { model, variant } of delegates) {
-        if (!model) continue;
-
-        const agentName = toAgentName(model);
+      for (const { agentName, model, variant } of delegates) {
         const agentDefaults = {
           description: `Multi-delegate: analyst subagent on ${model} (variant: ${variant || 'default'}).`,
           model,
@@ -145,17 +148,17 @@ export const MultiDelegatePlugin = async ({ client, directory }) => {
           mode: 'subagent',
           prompt: DELEGATE_PROMPT,
           tools: { read: true, glob: true, grep: true, list: true, bash: true },
-          permission: { bash: { '*': 'allow' } }
+          permission: { bash: { '*': 'allow' } },
         };
 
         // User overrides in agent.<name> take priority
         agents[agentName] = {
           ...agentDefaults,
-          ...(agents[agentName] || {})
+          ...(agents[agentName] || {}),
         };
       }
 
       config.agent = agents;
-    }
+    },
   };
 };
